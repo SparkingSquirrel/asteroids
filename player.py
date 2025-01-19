@@ -1,5 +1,7 @@
-from circleshape import *
+from circleshape import CircleShape
+from shot import Shot
 from constants import *
+import pygame
 
 class Player(CircleShape):
     def __init__(self, x, y):
@@ -16,6 +18,13 @@ class Player(CircleShape):
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
         self.position += forward * PLAYER_SPEED * dt
 
+    def shoot(self):
+        shot = Shot(self.position.x, self.position.y, SHOT_RADIUS) #does this work, or do I have to decompose it myself?
+        velocity = pygame.Vector2(0,1)
+        velocity = velocity.rotate(self.rotation)
+        velocity *= PLAYER_SHOT_SPEED
+        shot.velocity = velocity
+
     def update(self, dt):
         keys = pygame.key.get_pressed()
 
@@ -27,6 +36,8 @@ class Player(CircleShape):
             self.move(dt)                
         if keys[pygame.K_s]:
             self.move(-dt)
+        if keys[pygame.K_SPACE]:
+            self.shoot()
 
     def triangle(self):
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
