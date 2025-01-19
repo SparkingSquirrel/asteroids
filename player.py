@@ -7,6 +7,7 @@ class Player(CircleShape):
     def __init__(self, x, y):
         super().__init__(x, y, PLAYER_RADIUS)
         self.rotation = 0
+        self.shot_timer = 0
 
     def draw(self, screen):
         pygame.draw.polygon(screen, 'white', self.triangle(), 2)
@@ -19,11 +20,13 @@ class Player(CircleShape):
         self.position += forward * PLAYER_SPEED * dt
 
     def shoot(self):
-        shot = Shot(self.position.x, self.position.y, SHOT_RADIUS) #does this work, or do I have to decompose it myself?
-        velocity = pygame.Vector2(0,1)
-        velocity = velocity.rotate(self.rotation)
-        velocity *= PLAYER_SHOT_SPEED
-        shot.velocity = velocity
+        if (self.shot_timer <= 0):
+            shot = Shot(self.position.x, self.position.y, SHOT_RADIUS) #does this work, or do I have to decompose it myself?
+            velocity = pygame.Vector2(0,1)
+            velocity = velocity.rotate(self.rotation)
+            velocity *= PLAYER_SHOT_SPEED
+            shot.velocity = velocity
+            self.shot_timer = PLAYER_SHOOT_COOLDOWN
 
     def update(self, dt):
         keys = pygame.key.get_pressed()
@@ -38,6 +41,8 @@ class Player(CircleShape):
             self.move(-dt)
         if keys[pygame.K_SPACE]:
             self.shoot()
+
+        self.shot_timer -= dt
 
     def triangle(self):
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
